@@ -21,6 +21,6 @@ public class UserDaoService {
     }
 
     public User findById(Integer id) {
-        return users.stream().filter(user -> user.getId()==id).findFirst().orElse(new User(0,"No User", LocalDate.now()));
+        return users.stream().filter(user -> user.getId() == id).findFirst().orElse(new User(0,"No User", LocalDate.now()));
     }
 }
