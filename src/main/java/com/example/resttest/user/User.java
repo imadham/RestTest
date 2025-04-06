@@ -1,10 +1,19 @@
 package com.example.resttest.user;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.Length;
+
 import java.time.LocalDate;
 
+@Valid
 public class User {
     private Integer id;
+
+    @Size(min = 3, max = 25, message = "name length must be between 3 and 25")
     private String name;
+    @Past(message = "birth date must be in past")
     private LocalDate birthDate;
 
     public User(Integer id, String name, LocalDate birthDate) {
