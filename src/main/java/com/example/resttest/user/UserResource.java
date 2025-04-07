@@ -1,6 +1,9 @@
 package com.example.resttest.user;
 
 import jakarta.validation.Valid;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +11,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 public class UserResource {
@@ -22,13 +27,19 @@ public class UserResource {
         return service.findAll();
     }
 
+
+    //HATEOAS
     @GetMapping("/users/{id}")
-    public User getUser(@PathVariable Integer id){
+    public EntityModel<User> getUser(@PathVariable Integer id){
         User user = service.findById(id);
-        if (user != null)
-            return user;
-        else
+        if (user == null)
             throw  new UserNotFoundException("id:"+id);
+
+        EntityModel<User> model = EntityModel.of(user);
+        WebMvcLinkBuilder webMvcLinkBuilder = WebMvcLinkBuilder.linkTo(methodOn(this.getClass()).getAllUsers());
+        model.add(webMvcLinkBuilder.withRel("all-users"));
+        return model;
+
     }
 
     @PostMapping("/users")
