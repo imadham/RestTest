@@ -1,10 +1,10 @@
-package com.example.resttest.user;
+package com.example.resttest.user.jpa;
 
+import com.example.resttest.user.User;
+import com.example.resttest.user.UserNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -14,23 +14,24 @@ import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-public class UserResource {
-    private final UserDaoService service;
+@RestController
+public class UserResourceJpa {
+    private final UserRepository userRepository;
 
-    public UserResource(UserDaoService service) {
-        this.service = service;
+    public UserResourceJpa(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/users")
     public List<User> getAllUsers(){
-        return service.findAll();
+        return userRepository.findAll();
     }
 
 
     //HATEOAS
     @GetMapping("/users/{id}")
     public EntityModel<User> getUser(@PathVariable Integer id){
-        User user = service.findById(id);
+        User user = userRepository.findById(id).orElse(null);
         if (user == null)
             throw  new UserNotFoundException("id:"+id);
 
@@ -44,8 +45,7 @@ public class UserResource {
     @PostMapping("/users")
     public ResponseEntity<User> createUser(@Valid @RequestBody User user){
 
-        int userID = service.save(user).getId();
-        URI uri = URI.create("/users/"+userID);
+        int userID = userRepository.save(user).getId();
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(userID).toUri();
         return  ResponseEntity.created(location).build();
 
@@ -53,7 +53,7 @@ public class UserResource {
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id){
-        service.deleteById(id);
+        userRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 

@@ -1,6 +1,9 @@
 package com.example.resttest.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
@@ -9,7 +12,11 @@ import org.hibernate.validator.constraints.Length;
 import java.time.LocalDate;
 
 @Valid
+@Entity(name = "user_details")
 public class User {
+
+    @Id
+    @GeneratedValue
     private Integer id;
 
     @Size(min = 3, max = 25, message = "name length must be between 3 and 25")
@@ -23,6 +30,9 @@ public class User {
         this.id = id;
         this.name = name;
         this.birthDate = birthDate;
+    }
+
+    public User() {
     }
 
     public Integer getId() {
